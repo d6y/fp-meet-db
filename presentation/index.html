@@ -40,7 +40,7 @@
       list-style-type: none;
     }
     blockquote {
-      font-size: 140%;
+      font-size: 160%;
     }
     .wide {
       margin: 0;
@@ -161,7 +161,7 @@ where
 
 ```
     code |                 name                 | population
-------+--------------------------------------+------------
+   ------+--------------------------------------+------------
     ARE  | United Arab Emirates                 |    2441000
     GBR  | United Kingdom                       |   59623400
     USA  | United States                        |  278357000
@@ -206,7 +206,7 @@ val countries: Table[Country] = table[Country]("country")
 ```
 val query: Query[Country] =
   from(countries) { c =>
-  where(c.code === "GBR") select(c)
+    where(c.code === "GBR") select(c)
   }
 ```
 
@@ -233,7 +233,7 @@ def select[R](yieldClosure: => R): SelectState[R] =
 
 # doobie
 
-> "doobie programs are values. You can compose small programs to build larger programs. Once you have constructed a program you wish to run, you interpret it into an effectful target monad of your choice"
+> "doobie programs are values. You can compose small programs to build larger programs. Once you have constructed a program you wish to run, you interpret it..."
 
 ???
 
@@ -258,6 +258,12 @@ val xa = DriverManagerTransactor[Task] ...
 
 val uk: Option[Country] = query.option.transact(xa).run
 ```
+---
+class: center, middle
+
+# Interpreters
+
+## Adding meaning to a program at runtime
 
 ---
 
@@ -275,42 +281,37 @@ val names = for {
 ```
 
 ---
-class: center, middle
 
-# Interpreters Everywhere!
-
-## Adding meaning to a program at runtime
-
----
-
-## github.com/underscoreio/doodle
+# How? (-ish)
 
 ```
-sealed trait Image
-case class Path(elements: Seq[PathElement]) extends Image
-case class Circle(r: Double) extends Image
-case class Rectangle(w: Double, h: Double) extends Image
-case class Triangle(w: Double, h: Double) extends Image
-...
+sealed trait DbOp[Step]
+case class Put[Step](k: String, v: String) extends DbOp[Step]
+case class Get[Step](k: String)            extends DbOp[Step]
 ```
 
----
-
-# Two Interpreters
+--
 
 ```
-// JavaScript
-import org.scalajs.dom
-def draw(image: Image, id: String): Unit =
-  draw(image, canvasElement(id))
+case class Put[Step](k: String, v: String, next: Step)
+  extends DbOp[Step]
+
+case class Get[Step](k: String, next: String => Step)
+  extends DbOp[Step]
 ```
 
+--
+
 ```
-// JVM Desktop
-import java.awt.Frame
-def draw(image: Image): Unit =
-  DoodleFrame(image).setVisible(true)
+val prog =
+  Get("name", n => Put("greeting", s"Hello $n", () => Unit))
 ```
+
+--
+
+
+#### Watch → [_Dead-Simple Dependency Injection_](https://www.youtube.com/watch?v=ZasXwtTRkio)
+
 
 ---
 
