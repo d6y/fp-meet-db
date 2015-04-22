@@ -3,9 +3,9 @@ name := "fp-meet-db"
 scalaVersion := "2.11.6"
 
 resolvers ++= Seq(
-	  "tpolecat" at "http://dl.bintray.com/tpolecat/maven",
-		  "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
-		)
+    "tpolecat" at "http://dl.bintray.com/tpolecat/maven",
+      "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
+    )
 
 libraryDependencies ++= doobie ++ squeryl
 
@@ -36,3 +36,5 @@ scalacOptions ++= Seq(
   "-Ywarn-value-discard",
   "-Xfuture"
   )
+
+  triggeredMessage in ThisBuild := Watched.clearWhenTriggered
